@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pakistan Electricity Bill Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #2b5876, #4e4376);
+      color: #fff;
+      text-align: center;
+      padding: 30px;
+    }
+    .container {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    label {
+      font-size: 18px;
+      display: block;
+      margin-bottom: 10px;
+    }
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+      border: none;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 30px;
+      background-color: #00b894;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #019874;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #f1c40f;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Electricity Bill Calculator (Pakistan)</h1>
+    <label for="units">Enter Units Consumed:</label>
+    <input type="number" id="units" placeholder="e.g. 350" />
+    <button onclick="calculateBill()">Calculate Bill</button>
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    function calculateBill() {
+      const units = parseFloat(document.getElementById('units').value);
+      let total = 0;
+
+      if (units <= 100) {
+        total = units * 7.74;
+      } else if (units <= 200) {
+        total = (100 * 7.74) + ((units - 100) * 10.06);
+      } else if (units <= 300) {
+        total = (100 * 7.74) + (100 * 10.06) + ((units - 200) * 12.15);
+      } else if (units <= 700) {
+        total = (100 * 7.74) + (100 * 10.06) + (100 * 12.15) + ((units - 300) * 19.55);
+      } else {
+        total = (100 * 7.74) + (100 * 10.06) + (100 * 12.15) + (400 * 19.55) + ((units - 700) * 22.65);
+      }
+
+      document.getElementById('result').innerText = `Estimated Bill: PKR ${total.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
