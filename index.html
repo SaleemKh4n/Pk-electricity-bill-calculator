@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pakistan Electricity Bill Calculator</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Electricity Bill Calculator (Pakistan – July 2025)</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -18,7 +17,7 @@
       padding: 30px;
       border-radius: 15px;
       box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      max-width: 500px;
+      max-width: 520px;
       margin: 0 auto;
     }
     h1 {
@@ -51,15 +50,20 @@
     }
     .result {
       margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
+      font-size: 18px;
+      text-align: left;
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    .result strong {
       color: #f1c40f;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Electricity Bill Calculator (Pakistan)</h1>
+    <h1>Electricity Bill Calculator (Pakistan – July 2025)</h1>
     <label for="units">Enter Units Consumed:</label>
     <input type="number" id="units" placeholder="e.g. 350" />
     <button onclick="calculateBill()">Calculate Bill</button>
@@ -67,23 +71,55 @@
   </div>
 
   <script>
+    // Config object (easy to update)
+    const rates = {
+      slab1: { upto: 100, rate: 10.54 },
+      slab2: { upto: 200, rate: 13.01 },
+      slab3: { rate: 23.44 }, // above 200
+      fpaPerUnit: 1.5,
+      meterRent: 35,
+      tvFee: 35,
+      gstRate: 0.17
+    };
+
     function calculateBill() {
       const units = parseFloat(document.getElementById('units').value);
-      let total = 0;
-
-      if (units <= 100) {
-        total = units * 7.74;
-      } else if (units <= 200) {
-        total = (100 * 7.74) + ((units - 100) * 10.06);
-      } else if (units <= 300) {
-        total = (100 * 7.74) + (100 * 10.06) + ((units - 200) * 12.15);
-      } else if (units <= 700) {
-        total = (100 * 7.74) + (100 * 10.06) + (100 * 12.15) + ((units - 300) * 19.55);
-      } else {
-        total = (100 * 7.74) + (100 * 10.06) + (100 * 12.15) + (400 * 19.55) + ((units - 700) * 22.65);
+      if (isNaN(units) || units <= 0) {
+        document.getElementById("result").innerHTML = "<strong>Please enter a valid number of units.</strong>";
+        return;
       }
 
-      document.getElementById('result').innerText = `Estimated Bill: PKR ${total.toFixed(2)}`;
+      let energyCharge = 0;
+      let remaining = units;
+
+      if (remaining > rates.slab2.upto) {
+        energyCharge += (remaining - rates.slab2.upto) * rates.slab3.rate;
+        remaining = rates.slab2.upto;
+      }
+      if (remaining > rates.slab1.upto) {
+        energyCharge += (remaining - rates.slab1.upto) * rates.slab2.rate;
+        remaining = rates.slab1.upto;
+      }
+      if (remaining > 0) {
+        energyCharge += remaining * rates.slab1.rate;
+      }
+
+      const fpa = units * rates.fpaPerUnit;
+      const subtotal = energyCharge + fpa + rates.meterRent + rates.tvFee;
+      const gst = subtotal * rates.gstRate;
+      const totalBill = subtotal + gst;
+
+      document.getElementById("result").innerHTML = `
+        <strong>Bill Breakdown:</strong><br><br>
+        Units Consumed: ${units}<br>
+        Energy Charges: PKR ${energyCharge.toFixed(2)}<br>
+        Fuel Price Adjustment (FPA): PKR ${fpa.toFixed(2)}<br>
+        Meter Rent: PKR ${rates.meterRent}<br>
+        TV Fee: PKR ${rates.tvFee}<br>
+        Subtotal: PKR ${subtotal.toFixed(2)}<br>
+        GST (17%): PKR ${gst.toFixed(2)}<br><br>
+        <strong>Total Bill: PKR ${totalBill.toFixed(2)}</strong>
+      `;
     }
   </script>
 </body>
